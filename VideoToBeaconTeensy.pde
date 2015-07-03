@@ -81,7 +81,8 @@ void draw() {
   
   GetPixelDataFromFrame();
   
-  if(newFrame==getLength()-1)
+  //if(newFrame==getLength()-1)
+   if(newFrame==10)
   {
     DeletePreviousFile();
     saveBytes(fileName, pixelBuffer);
@@ -102,14 +103,18 @@ void draw() {
 void RenderAsTextArray()
 {
   int loc = 0;
+  
   //Save The Data as a text array so it can be copied into Arduino
-  for(int i = 0; i<getLength(); i++)//for each frame
+  //for(int i = 0; i<getLength(); i++)//for each frame
+  for(int i = 0; i<10; i++)//for each frame
   {
+    println(loc);
     print("flame["); print(i); print("]{");
       for(int j = 0; j<3*numLeds; j++)//for each pixel
       {
-        print((int)pixelBuffer[loc]);
-        if(j<3*numLeds*getLength()-1) print(",");
+        print(pixelBuffer[loc]);
+        if(j<3*numLeds-1) print(",");
+        
         loc++;
       }
   println("};");
@@ -183,9 +188,8 @@ void GetPixelDataFromFrame()
     pixel.x *= widthFactor; 
     pixel.y *= heightFactor; 
     
-    color c = get(width - pixel.x, height - pixel.y);
-    //get another nearby pixel, and calculate the average
-
+    int c = get(width - pixel.x, height - pixel.y);
+    print(" c=");println(c);
     
     b = c&0x000000ff;
     c>>=8;
@@ -213,14 +217,15 @@ void GetPixelDataFromFrame()
     }
     
     int loc = newFrame*numLeds*3;
-    pixelBuffer[loc+i*3] = (byte)((r+rr)/brightnessDividor);
-    pixelBuffer[loc+i*3+1] = (byte)((g+gg)/brightnessDividor);
-    pixelBuffer[loc+i*3+2] = (byte)((b+bb)/brightnessDividor);
+    pixelBuffer[loc+(i*3)] = (byte)((r+rr)/brightnessDividor);
+    pixelBuffer[loc+(i*3+1)] = (byte)((g+gg)/brightnessDividor);
+    pixelBuffer[loc+(i*3+2)] = (byte)((b+bb)/brightnessDividor);
     
-    if(dev && i==230)
+    if(dev && i==10)
     {
       print(" fr="); print(newFrame);
       print(" px="); print(i);
+      print(" c=");println(c);
       print(" r=");print(r);
       print(" g=");print(g);
       print(" b=");print(b);
@@ -230,6 +235,7 @@ void GetPixelDataFromFrame()
       print(" sdr=");print(pixelBuffer[loc+i*3]);
       print(" sdg=");print(pixelBuffer[loc+i*3+1]);
       print(" sdb=");println(pixelBuffer[loc+i*3+2]);
+      
     }
     
   }

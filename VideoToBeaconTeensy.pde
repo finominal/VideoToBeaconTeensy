@@ -8,12 +8,13 @@
  */
  
 import processing.video.*;
+PrintWriter output;
 
-String fileName = dataPath("/users/finbot/desktop/Fire1.led");
+String fileName = dataPath("/users/finbot/desktop/FireBeacon.txt");
 
-int brightnessDividor = 3; //pitch down the brightness, more is duller
+int brightnessDividor = 4; //pitch down the brightness, more is duller
 boolean colorSmoothing = false;
-boolean dev = true;
+boolean dev = false;
 
 Movie mov;
 int newFrame = 0;
@@ -27,6 +28,7 @@ void setup() {
   // and we can get duration, size and other information from
   // the video stream. 
   mov = new Movie(this, "/Users/finbot/Documents/Projects/VestVideos/Firelooped.mp4");
+  //mov = new Movie(this, "/Users/finbot/Documents/Projects/Animation Videos/Artcar Videos/FireColorGraded.mp4");
   
   // Pausing the video at the first frame. 
   mov.play();
@@ -61,7 +63,7 @@ void StretchToFrameFactoring()
     print(" maxY="); println(maxY);
     
     widthFactor = w/maxX;
-    heightFactor = h/maxY;
+    heightFactor = h/maxY -2;
   
 
     print(" widthFactor="); println(widthFactor);
@@ -81,11 +83,11 @@ void draw() {
   
   GetPixelDataFromFrame();
   
-  //if(newFrame==getLength()-1)
-   if(newFrame==10)
+  if(newFrame==getLength()-1)
+   //if(newFrame==725)
   {
     DeletePreviousFile();
-    saveBytes(fileName, pixelBuffer);
+    //saveBytes(fileName, pixelBuffer);
     RenderAsTextArray();
     println("Processing Completed");
     exit();
@@ -103,22 +105,25 @@ void draw() {
 void RenderAsTextArray()
 {
   int loc = 0;
-  
+  output = createWriter(fileName);
   //Save The Data as a text array so it can be copied into Arduino
-  //for(int i = 0; i<getLength(); i++)//for each frame
-  for(int i = 0; i<10; i++)//for each frame
+  for(int i = 0; i<getLength(); i++)//for each frame
+  //for(int i = 0; i<10; i++)//for each frame
   {
-    println(loc);
-    print("flame["); print(i); print("]{");
+    
+    //println(loc);
+    output.print("{");
       for(int j = 0; j<3*numLeds; j++)//for each pixel
       {
-        print(pixelBuffer[loc]);
-        if(j<3*numLeds-1) print(",");
+        output.print(pixelBuffer[loc]);
+        if(j<3*numLeds-1) output.print(",");
         
         loc++;
       }
-  println("};");
+  output.println("},");
 }
+output.flush();
+output.close();
 }
 
 
@@ -185,17 +190,22 @@ void GetPixelDataFromFrame()
     LED pixel = new LED(leds[i].x+2, leds[i].y+2); //plus 2 is to offset from the boarder
     
     //stretch the pixel to get to spread the XY of the array over the whole video
-    pixel.x *= widthFactor; 
+    //pixel.x *= widthFactor; 
     pixel.y *= heightFactor; 
+    loadPixels();
+    color c = get(width - 300, height - pixel.y);
     
-    int c = get(width - pixel.x, height - pixel.y);
-    print(" c=");println(c);
+    // color c = pixels[pixel.y+width+pixel.x];
+    
+    //print(" c=");println(c);
     
     b = c&0x000000ff;
     c>>=8;
     g = c&0x000000ff; 
     c>>=8;
     r = c&0x000000ff;
+    
+    
     
     if(colorSmoothing)
     {
@@ -225,7 +235,7 @@ void GetPixelDataFromFrame()
     {
       print(" fr="); print(newFrame);
       print(" px="); print(i);
-      print(" c=");println(c);
+      print(" c=");print(c);
       print(" r=");print(r);
       print(" g=");print(g);
       print(" b=");print(b);
@@ -237,7 +247,7 @@ void GetPixelDataFromFrame()
       print(" sdb=");println(pixelBuffer[loc+i*3+2]);
       
     }
-    
+    //del(10);
   }
 }
 

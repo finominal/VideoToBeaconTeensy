@@ -1,8 +1,10 @@
 
-int numLeds = 51; 
+int numLeds = 12; //hood
+//int numLeds = 51;  //bike beacons
+
 byte[] pixelBuffer;
-int w = 640;
-int h = 360;
+//int w = 640;
+//int h = 360;
 int widthFactor, heightFactor;
 
 LED[] leds = new LED[numLeds]; //have to know num leds
@@ -21,6 +23,26 @@ class LED
 
 
 
+//Fiber Hood
+void PopulateLedArray()
+{
+leds[0] = new LED(2,2);
+leds[1] = new LED(2,3);
+leds[2] = new LED(2,4);
+leds[3] = new LED(2,5);
+leds[4] = new LED(2,6);
+leds[5] = new LED(2,7);
+leds[6] = new LED(2,7);
+leds[7] = new LED(2,6);
+leds[8] = new LED(2,5);
+leds[9] = new LED(2,4);
+leds[10] = new LED(2,3);
+leds[11] = new LED(2,2);
+}
+
+
+/*
+//Beacon on bikes 
 void PopulateLedArray()
 {
 leds[0] = new LED(2,0);
@@ -75,4 +97,4 @@ leds[48] = new LED(2,48);
 leds[49] = new LED(2,49);
 leds[50] = new LED(2,50);
 }
-
+*/

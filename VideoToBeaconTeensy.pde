@@ -10,15 +10,16 @@
 import processing.video.*;
 PrintWriter output;
 
-String fileName = dataPath("/users/finbot/desktop/FireBeacon.txt");
+String fileName = dataPath("/users/finbot/desktop/FireHood.txt");
 
-int brightnessDividor = 4; //pitch down the brightness, more is duller
+int brightnessDividor = 2; //pitch down the brightness, more is duller
 boolean colorSmoothing = false;
 boolean dev = false;
 
 Movie mov;
 int newFrame = 0;
 int movFrameRate = 25;//need to match video
+int famesToCapture;
 
 void setup() {
   size(640, 360);
@@ -35,7 +36,10 @@ void setup() {
   mov.jump(0);
   mov.pause();
   
+  //famesToCapture = getLength();
+  famesToCapture = 350;
   SetupLedRendering();
+  
 }
 
 void SetupLedRendering()
@@ -44,7 +48,7 @@ void SetupLedRendering()
   StretchToFrameFactoring();
   
   //create a buffer the length of the video;
-  pixelBuffer = new byte[numLeds*3*getLength()];
+  pixelBuffer = new byte[numLeds*3*famesToCapture];
 
 }
 
@@ -62,8 +66,8 @@ void StretchToFrameFactoring()
     print(" maxX="); println(maxX);
     print(" maxY="); println(maxY);
     
-    widthFactor = w/maxX;
-    heightFactor = h/maxY -2;
+    widthFactor = width/maxX;
+    heightFactor = height/maxY-20;
   
 
     print(" widthFactor="); println(widthFactor);
@@ -83,7 +87,7 @@ void draw() {
   
   GetPixelDataFromFrame();
   
-  if(newFrame==getLength()-1)
+  if(newFrame==famesToCapture-1)
    //if(newFrame==725)
   {
     DeletePreviousFile();
@@ -98,7 +102,7 @@ void draw() {
   }
   
   //show progress on the screen
-  text(newFrame + " / " + (getLength() - 1), 10, 30);
+  text(newFrame + " / " + (famesToCapture - 1), 10, 30);
   //del(500);
 }
 
@@ -106,8 +110,12 @@ void RenderAsTextArray()
 {
   int loc = 0;
   output = createWriter(fileName);
+  output.print("LED COUNT: "); output.println(numLeds);
+  output.print("int numberOfFrames = "); output.print(famesToCapture); output.println(";");  ///bike beacon
+  output.print("FLASH_TABLE( char, fireFrames ,"); output.print(numLeds*3); ;output.println(","); 
+  
   //Save The Data as a text array so it can be copied into Arduino
-  for(int i = 0; i<getLength(); i++)//for each frame
+  for(int i = 0; i<famesToCapture; i++)//for each frame
   //for(int i = 0; i<10; i++)//for each frame
   {
     
@@ -122,6 +130,7 @@ void RenderAsTextArray()
       }
   output.println("},");
 }
+
 output.flush();
 output.close();
 }
@@ -144,7 +153,7 @@ void keyPressed() {
     if (keyCode == LEFT) {
       if (0 < newFrame) newFrame--; 
     } else if (keyCode == RIGHT) {
-      if (newFrame < getLength() - 1) newFrame++;
+      if (newFrame < famesToCapture - 1) newFrame++;
     }
   } 
   setFrame(newFrame);  

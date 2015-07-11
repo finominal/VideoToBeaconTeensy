@@ -1,3 +1,4 @@
+
 /**
  * Frames 
  * by Andres Colubri. 
@@ -10,7 +11,7 @@
 import processing.video.*;
 PrintWriter output;
 
-String fileName = dataPath("/users/finbot/desktop/FireHood.txt");
+String fileName = dataPath("/users/finbot/desktop/Firescarf.txt");
 
 int brightnessDividor = 2; //pitch down the brightness, more is duller
 boolean colorSmoothing = false;
@@ -52,6 +53,38 @@ void SetupLedRendering()
 
 }
 
+void draw() {
+  background(0);
+  fill(255);
+  setFrame(newFrame);  
+  image(mov, 0, 0, width, height);
+  
+  //main action
+  GetPixelDataFromFrame();
+  
+  //Finished getting all the frames, now write to file
+  if(newFrame==famesToCapture-1)
+  {
+    DeletePreviousFile();
+    //saveBytes(fileName, pixelBuffer);
+    RenderAsTextArray();
+    println("Processing Completed");
+    exit();
+  }
+  else //not finished, get the next frame
+  {
+    newFrame++;
+  }
+  
+  //show progress on the screen
+  text(newFrame + " / " + (famesToCapture - 1), 10, 30);
+}
+
+//get the actual frame/image from the video
+int getFrame() {    
+  return ceil(mov.time() * 30) - 1;
+}
+
 void StretchToFrameFactoring()
 {
   int maxX = 0;
@@ -67,7 +100,7 @@ void StretchToFrameFactoring()
     print(" maxY="); println(maxY);
     
     widthFactor = width/maxX;
-    heightFactor = height/maxY-20;
+    heightFactor = height/maxY;
   
 
     print(" widthFactor="); println(widthFactor);
@@ -79,91 +112,8 @@ void movieEvent(Movie m) {
   m.read();
 }
 
-void draw() {
-  background(0);
-  fill(255);
-  setFrame(newFrame);  
-  image(mov, 0, 0, width, height);
-  
-  GetPixelDataFromFrame();
-  
-  if(newFrame==famesToCapture-1)
-   //if(newFrame==725)
-  {
-    DeletePreviousFile();
-    //saveBytes(fileName, pixelBuffer);
-    RenderAsTextArray();
-    println("Processing Completed");
-    exit();
-  }
-  else
-  {
-    newFrame++;
-  }
-  
-  //show progress on the screen
-  text(newFrame + " / " + (famesToCapture - 1), 10, 30);
-  //del(500);
-}
 
-void RenderAsTextArray()
-{
-  int loc = 0;
-  output = createWriter(fileName);
-  output.print("LED COUNT: "); output.println(numLeds);
-  output.print("int numberOfFrames = "); output.print(famesToCapture); output.println(";");  ///bike beacon
-  output.print("FLASH_TABLE( char, fireFrames ,"); output.print(numLeds*3); ;output.println(","); 
-  
-  //Save The Data as a text array so it can be copied into Arduino
-  for(int i = 0; i<famesToCapture; i++)//for each frame
-  //for(int i = 0; i<10; i++)//for each frame
-  {
-    
-    //println(loc);
-    output.print("{");
-      for(int j = 0; j<3*numLeds; j++)//for each pixel
-      {
-        output.print(pixelBuffer[loc]);
-        if(j<3*numLeds-1) output.print(",");
-        
-        loc++;
-      }
-  output.println("},");
-}
-
-output.flush();
-output.close();
-}
-
-
-
-void DeletePreviousFile()
-{
-  File f = new File(fileName);
-  
-  if (f.exists()) 
-  {
-    f.delete();
-    println("Deleted Previous File");
-  }
-}
-
-void keyPressed() {
-  if (key == CODED) {
-    if (keyCode == LEFT) {
-      if (0 < newFrame) newFrame--; 
-    } else if (keyCode == RIGHT) {
-      if (newFrame < famesToCapture - 1) newFrame++;
-    }
-  } 
-  setFrame(newFrame);  
-  GetPixelDataFromFrame();
-}
-  
-int getFrame() {    
-  return ceil(mov.time() * 30) - 1;
-}
-
+//Move location to a particular frame. Bit crude in implementation
 void setFrame(int n) {
   mov.play();
     
@@ -196,16 +146,14 @@ void GetPixelDataFromFrame()
     int r,g,b, rr, gg, bb;
     r = b = g = rr = gg = bb = 0;
     
-    LED pixel = new LED(leds[i].x+2, leds[i].y+2); //plus 2 is to offset from the boarder
+    LED pixel = new LED(leds[i].x+2, leds[i].y+5); //plus 2 is to offset from the boarder
     
     //stretch the pixel to get to spread the XY of the array over the whole video
     //pixel.x *= widthFactor; 
     pixel.y *= heightFactor; 
+    
     loadPixels();
     color c = get(width - 300, height - pixel.y);
-    
-    // color c = pixels[pixel.y+width+pixel.x];
-    
     //print(" c=");println(c);
     
     b = c&0x000000ff;
@@ -214,8 +162,7 @@ void GetPixelDataFromFrame()
     c>>=8;
     r = c&0x000000ff;
     
-    
-    
+    //This might help make it look smothers
     if(colorSmoothing)
     {
       color cc = get((width - pixel.x)+1, (height - pixel.y)+1);
@@ -259,6 +206,24 @@ void GetPixelDataFromFrame()
     //del(10);
   }
 }
+
+
+
+
+
+//HELPERS
+void keyPressed() {
+  if (key == CODED) {
+    if (keyCode == LEFT) {
+      if (0 < newFrame) newFrame--; 
+    } else if (keyCode == RIGHT) {
+      if (newFrame < famesToCapture - 1) newFrame++;
+    }
+  } 
+  setFrame(newFrame);  
+  GetPixelDataFromFrame();
+}
+  
 
 
 void del(int wait)

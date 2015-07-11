@@ -1,5 +1,5 @@
-
-int numLeds = 12; //hood
+int numLeds = 48; //hood
+//int numLeds = 12; //hood
 //int numLeds = 51;  //bike beacons
 
 byte[] pixelBuffer;
@@ -23,7 +23,62 @@ class LED
 
 
 
-//Fiber Hood
+//Beacon on bikes  49 leds
+void PopulateLedArray()
+{
+leds[0] = new LED(2,3);
+leds[1] = new LED(2,4);
+leds[2] = new LED(2,5);
+leds[3] = new LED(2,6);
+leds[4] = new LED(2,7);
+leds[5] = new LED(2,8);
+leds[6] = new LED(2,9);
+leds[7] = new LED(2,10);
+leds[8] = new LED(2,11);
+leds[9] = new LED(2,12);
+leds[10] = new LED(2,13);
+leds[11] = new LED(2,14);
+leds[12] = new LED(2,15);
+leds[13] = new LED(2,16);
+leds[14] = new LED(2,17);
+leds[15] = new LED(2,18);
+leds[16] = new LED(2,19);
+leds[17] = new LED(2,20);
+leds[18] = new LED(2,21);
+leds[19] = new LED(2,22);
+leds[20] = new LED(2,23);
+leds[21] = new LED(2,24);
+leds[22] = new LED(2,25);
+leds[23] = new LED(2,26);
+leds[24] = new LED(2,26);
+leds[25] = new LED(4,25);
+leds[26] = new LED(4,24);
+leds[27] = new LED(4,23);
+leds[28] = new LED(4,22);
+leds[29] = new LED(4,21);
+leds[30] = new LED(4,20);
+leds[31] = new LED(4,19);
+leds[32] = new LED(4,18);
+leds[33] = new LED(4,17);
+leds[34] = new LED(4,16);
+leds[35] = new LED(4,15);
+leds[36] = new LED(4,14);
+leds[37] = new LED(4,13);
+leds[38] = new LED(4,12);
+leds[39] = new LED(4,11);
+leds[40] = new LED(4,10);
+leds[41] = new LED(4,9);
+leds[42] = new LED(4,8);
+leds[43] = new LED(4,7);
+leds[44] = new LED(4,6);
+leds[45] = new LED(4,5);
+leds[46] = new LED(4,4);
+leds[47] = new LED(4,3);
+}
+
+/*
+
+//Fiber Hood 12 leds
 void PopulateLedArray()
 {
 leds[0] = new LED(2,2);
@@ -42,7 +97,7 @@ leds[11] = new LED(2,2);
 
 
 /*
-//Beacon on bikes 
+//Beacon on bikes  51 leds
 void PopulateLedArray()
 {
 leds[0] = new LED(2,0);
